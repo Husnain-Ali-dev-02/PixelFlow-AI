@@ -1,14 +1,15 @@
 "use client";
-import React, { useState } from "react";
+
+import React, { useMemo, useState } from "react";
 import Header from "./Header";
 import PromptInput from "@/components/PromptInput";
 import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
+import { useCreateProject } from "@/features/use-project";
 
 const LandingSection = () => {
-  const [promptText, setPromptText] = useState<string>("");
+  const [promptText, setPromptText] = useState("");
+  const { mutate, isPending } = useCreateProject();
 
-
-  
   const suggestions = [
     {
       label: "Finance Tracker",
@@ -42,67 +43,94 @@ const LandingSection = () => {
     },
   ];
 
-
   const handleSuggestionClick = (val: string) => {
     setPromptText(val);
   };
 
-  //  const handleSubmit = () => {
-  //   if (!promptText) return;
-  //   mutate(promptText);
-  // };
+  const handleSubmit = () => {
+    if (!promptText) return;
+    mutate(promptText);
+  };
 
   return (
-    <div className="w-full min-h-screen ">
-      <div className="flex flex-col ">
-        <Header />
+    <div className="relative w-full min-h-screen overflow-hidden">
+      <Header />
 
-        <div className="relative overflow-hidden pt-28">
-          <div className="max-w-6xl mx-auto flex flex-col items-center justify-center">
-            <div className="space-y-3">
-              <h1 className="text-center font-semibold text-4xl tracking-tight sm:text-5xl">
-                {" "}
-                Design mobile apps <br className="md:hidden" />
-                <span className="text-primary">in minutes</span>
-              </h1>
-              <div className="mx-auto max-w-2xl ">
-                <p className="text-center font-medium text-foreground leading-relaxed sm:text-lg">
-                  Go from idea to beautiful app mockups in minutes by chatting
-                  with AI.
-                </p>
-              </div>
+      {/* Hero Section */}
+      <section className="relative pt-24 sm:pt-28">
+        <div className="mx-auto max-w-6xl px-4 flex flex-col items-center text-center">
+          <h1 className="font-semibold tracking-tight text-3xl sm:text-4xl md:text-5xl">
+            Design mobile apps <br className="md:hidden" />
+            <span className="text-primary"> in minutes</span>
+          </h1>
 
-              <div className="flex w-full max-w-3xl flex-col items-center gap-8 relativez-50">
-                <div className="w-full">
-                  <PromptInput
-                    className="ring-2 ring-primary"
-                    promptText={promptText}
-                    setPromptText={setPromptText}
-                    isLoading={false}
-                  // onSubmit={handleSubmit}
-                  />
-                </div>
+          <p className="mt-4 max-w-2xl text-base sm:text-lg font-medium text-foreground leading-relaxed">
+            Go from idea to beautiful app mockups in minutes by chatting with
+            AI.
+          </p>
 
-                <div className="flex flex-wrap justify-center gap-2 px-5">
-  <Suggestions>
-                  {suggestions.map((s) => (
-                    <Suggestion
-                      key={s.label}
-                      suggestion={s.label}
-                      className="text-xs! h-7! px-2.5 pt-1!"
-                      onClick={() => handleSuggestionClick(s.value)}
-                    >
-                      {s.icon}
-                      <span>{s.label}</span>
-                    </Suggestion>
-                  ))}
-                </Suggestions>
-                </div>
-              </div>
+          {/* Prompt + Suggestions */}
+          <div className="relative z-50 mt-8 w-full max-w-3xl flex flex-col items-center gap-6">
+            <PromptInput
+              className="ring-2 ring-primary"
+              promptText={promptText}
+              setPromptText={setPromptText}
+              isLoading={isPending}
+              onSubmit={handleSubmit}
+            />
+
+            <div className="flex flex-wrap justify-center gap-2 px-4">
+              <Suggestions>
+                {suggestions.map((s) => (
+                  <Suggestion
+                    key={s.label}
+                    suggestion={s.value}
+                    aria-label={`Use ${s.label} template`}
+                    className="h-7 px-2.5 pt-1 text-xs"
+                    onClick={(value) => setPromptText(value)}
+                  >
+                    <span aria-hidden="true">{s.icon}</span>
+                    <span>{s.label}</span>
+                  </Suggestion>
+                ))}
+              </Suggestions>
             </div>
           </div>
         </div>
-      </div>
+
+        {/* Background Glow */}
+        <div
+          className="absolute -translate-x-1/2
+             left-1/2 w-[5000px] h-[3000px] top-[80%]
+             -z-10"
+        >
+          <div
+            className="-translate-x-1/2 absolute
+               bottom-[calc(100%-300px)] left-1/2
+               h-[2000px] w-[2000px]
+               opacity-20 bg-radial-primary"
+          ></div>
+          <div
+            className="absolute -mt-2.5
+              size-full rounded-[50%]
+               bg-primary/20 opacity-70
+               [box-shadow:0_-15px_24.8px_var(--primary)]"
+          ></div>
+          <div
+            className="absolute z-0 size-full
+               rounded-[50%] bg-background"
+          ></div>
+        </div>
+      </section>
+
+      {/* Recent Projects */}
+      <section className="w-full py-10">
+        <div className="mx-auto max-w-3xl px-4">
+          <h2 className="text-xl font-medium tracking-tight">
+            Recent Projects
+          </h2>
+        </div>
+      </section>
     </div>
   );
 };
