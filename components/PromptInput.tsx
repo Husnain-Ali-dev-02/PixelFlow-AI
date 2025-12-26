@@ -21,6 +21,7 @@ interface PromptInputProps {
   placeholder?: string;
   maxLength?: number;
   autoFocus?: boolean;
+  disabled?: boolean; // <-- added
 }
 
 const PromptInput = ({
@@ -33,8 +34,10 @@ const PromptInput = ({
   placeholder = "I want to design an app that...",
   maxLength = 1000,
   autoFocus = false,
+  disabled = false, // default to false
 }: PromptInputProps) => {
-  const canSubmit = promptText.trim().length > 0 && !isLoading;
+  // Disable submission if prompt is empty, loading, or disabled
+  const canSubmit = promptText.trim().length > 0 && !isLoading && !disabled;
 
   const handleSubmit = useCallback(() => {
     if (!canSubmit || !onSubmit) return;
@@ -43,12 +46,10 @@ const PromptInput = ({
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>) => {
-      // Cmd / Ctrl + Enter → Submit
       if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
         e.preventDefault();
         handleSubmit();
       }
-      // Enter alone → New line (default behavior)
     },
     [handleSubmit]
   );
@@ -62,40 +63,38 @@ const PromptInput = ({
 
   return (
     <div className="bg-background">
-     <InputGroup
-  className={cn(
-    "relative min-h-[172px] rounded-3xl bg-background",
-    "border border-border",
-    "transition-colors duration-200",
-    "hover:border-muted-foreground/40",
-    "focus-within:border-primary",
-    className
-  )}
->
-
-       <InputGroupTextarea
-  className="
-  text-base resize-none py-3 leading-relaxed
-    bg-transparent
-    outline-none
-    ring-0
-    shadow-none
-    focus:ring-0
-    focus:outline-none
-    focus-visible:ring-0
-    focus-visible:ring-offset-0
-  "
-  placeholder={placeholder}
-  value={promptText}
-  onChange={handleChange}
-  onKeyDown={handleKeyDown}
-  autoFocus={autoFocus}
-  disabled={isLoading}
-  maxLength={maxLength}
-  aria-label="AI design prompt input"
-  aria-describedby="character-counter"
-/>
-
+      <InputGroup
+        className={cn(
+          "relative min-h-[172px] rounded-3xl bg-background",
+          "border border-border",
+          "transition-colors duration-200",
+          "hover:border-muted-foreground/40",
+          "focus-within:border-primary",
+          className
+        )}
+      >
+        <InputGroupTextarea
+          className="
+            text-base resize-none py-3 leading-relaxed
+            bg-transparent
+            outline-none
+            ring-0
+            shadow-none
+            focus:ring-0
+            focus:outline-none
+            focus-visible:ring-0
+            focus-visible:ring-offset-0
+          "
+          placeholder={placeholder}
+          value={promptText}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          autoFocus={autoFocus}
+          disabled={isLoading || disabled} // <-- updated
+          maxLength={maxLength}
+          aria-label="AI design prompt input"
+          aria-describedby="character-counter"
+        />
 
         {/* Character Counter */}
         {maxLength && (
