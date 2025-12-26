@@ -21,7 +21,6 @@ interface PromptInputProps {
   placeholder?: string;
   maxLength?: number;
   autoFocus?: boolean;
-  disabled?: boolean; // <-- added
 }
 
 const PromptInput = ({
@@ -34,10 +33,9 @@ const PromptInput = ({
   placeholder = "I want to design an app that...",
   maxLength = 1000,
   autoFocus = false,
-  disabled = false, // default to false
 }: PromptInputProps) => {
-  // Disable submission if prompt is empty, loading, or disabled
-  const canSubmit = promptText.trim().length > 0 && !isLoading && !disabled;
+  // Disable submission if prompt is empty, loading
+  const canSubmit = promptText.trim().length > 0 && !isLoading;
 
   const handleSubmit = useCallback(() => {
     if (!canSubmit || !onSubmit) return;
@@ -90,7 +88,6 @@ const PromptInput = ({
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           autoFocus={autoFocus}
-          disabled={isLoading || disabled} // <-- updated
           maxLength={maxLength}
           aria-label="AI design prompt input"
           aria-describedby="character-counter"
@@ -122,7 +119,6 @@ const PromptInput = ({
             <InputGroupButton
               variant="default"
               size="sm"
-              disabled={!canSubmit}
               onClick={handleSubmit}
               aria-label={
                 isLoading ? "Generating design…" : "Generate design"

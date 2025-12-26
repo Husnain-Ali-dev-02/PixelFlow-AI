@@ -49,7 +49,6 @@ const LandingSection = () => {
               setPromptText={setPromptText}
               isLoading={isPending}
               onSubmit={handleSubmit}
-              disabled={!promptText || isPending}
             />
 
             <div className="flex flex-wrap justify-center gap-2 px-4">
