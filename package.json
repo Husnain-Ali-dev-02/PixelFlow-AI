@@ -12,7 +12,7 @@
   "dependencies": {
     "@inngest/realtime": "^0.4.5",
     "@kinde-oss/kinde-auth-nextjs": "^2.11.0",
-    "@openrouter/ai-sdk-provider": "^1.5.3",
+    "@openrouter/ai-sdk-provider": "^1.5.4",
     "@prisma/client": "^6.19.0",
     "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -25,7 +25,7 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@sparticuz/chromium-min": "^143.0.0",
     "@tanstack/react-query": "^5.90.12",
-    "ai": "^5.0.113",
+    "ai": "^5.0.116",
     "axios": "^1.13.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

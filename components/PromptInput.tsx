@@ -34,90 +34,107 @@ const PromptInput = ({
   maxLength = 1000,
   autoFocus = false,
 }: PromptInputProps) => {
+  const canSubmit = promptText.trim().length > 0 && !isLoading;
+
   const handleSubmit = useCallback(() => {
-    if (promptText.trim() && !isLoading && onSubmit) {
-      onSubmit();
-    }
-  }, [promptText, isLoading, onSubmit]);
+    if (!canSubmit || !onSubmit) return;
+    onSubmit();
+  }, [canSubmit, onSubmit]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>) => {
-      // Submit on Ctrl/Cmd + Enter
-      if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && !isLoading) {
+      // Cmd / Ctrl + Enter → Submit
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
         e.preventDefault();
         handleSubmit();
       }
-      
-      // Submit on Enter (without Shift)
-      if (e.key === "Enter" && !e.shiftKey && !isLoading) {
-        e.preventDefault();
-        handleSubmit();
-      }
+      // Enter alone → New line (default behavior)
     },
-    [isLoading, handleSubmit] // Add handleSubmit to dependencies
+    [handleSubmit]
   );
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      if (maxLength && e.target.value.length > maxLength) return;
       setPromptText(e.target.value);
     },
-    [maxLength, setPromptText]
+    [setPromptText]
   );
-
-  const isSubmitDisabled = !promptText.trim() || isLoading;
 
   return (
     <div className="bg-background">
-      <InputGroup
-        className={cn(
-          "min-h-[172px] rounded-3xl bg-background shadow-sm transition-shadow hover:shadow-md focus-within:shadow-md",
-          className
-        )}
-      >
-        <InputGroupTextarea
-          className="text-base resize-none py-2.5 focus-visible:ring-2 focus-visible:ring-primary/20"
-          placeholder={placeholder}
-          value={promptText}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          autoFocus={autoFocus}
-          disabled={isLoading}
-          aria-label="AI design prompt input"
-          aria-describedby={maxLength ? "character-counter" : undefined}
-        />
+     <InputGroup
+  className={cn(
+    "relative min-h-[172px] rounded-3xl bg-background",
+    "border border-border",
+    "transition-colors duration-200",
+    "hover:border-muted-foreground/40",
+    "focus-within:border-primary",
+    className
+  )}
+>
 
+       <InputGroupTextarea
+  className="
+  text-base resize-none py-3 leading-relaxed
+    bg-transparent
+    outline-none
+    ring-0
+    shadow-none
+    focus:ring-0
+    focus:outline-none
+    focus-visible:ring-0
+    focus-visible:ring-offset-0
+  "
+  placeholder={placeholder}
+  value={promptText}
+  onChange={handleChange}
+  onKeyDown={handleKeyDown}
+  autoFocus={autoFocus}
+  disabled={isLoading}
+  maxLength={maxLength}
+  aria-label="AI design prompt input"
+  aria-describedby="character-counter"
+/>
+
+
+        {/* Character Counter */}
         {maxLength && (
-          <div className="absolute bottom-16 right-4 text-xs text-muted-foreground">
-            <span id="character-counter">
-              {promptText.length}/{maxLength}
-            </span>
+          <div
+            id="character-counter"
+            className="absolute bottom-16 right-4 text-xs text-muted-foreground"
+          >
+            {promptText.length}/{maxLength}
           </div>
         )}
 
         <InputGroupAddon
           align="block-end"
-          className="flex items-center justify-between px-4"
+          className="flex flex-wrap items-center justify-between gap-3 px-4 py-2"
         >
           <div className="text-xs text-muted-foreground">
-            Press <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">Enter</kbd> to submit •{" "}
-            <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">Shift + Enter</kbd> for new line
+            Press{" "}
+            <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">
+              Ctrl / Cmd + Enter
+            </kbd>{" "}
+            to submit
           </div>
 
           {!hideSubmitBtn && (
             <InputGroupButton
               variant="default"
               size="sm"
-              disabled={isSubmitDisabled}
+              disabled={!canSubmit}
               onClick={handleSubmit}
-              aria-label={isLoading ? "Generating design..." : "Generate design"}
+              aria-label={
+                isLoading ? "Generating design…" : "Generate design"
+              }
               className="gap-2"
             >
               {isLoading ? (
-                <>
+                <span role="status" className="flex items-center gap-2">
                   <Spinner className="size-4" />
-                  Designing...
-                </>
+                  Designing…
+                </span>
               ) : (
                 <>
                   Design
